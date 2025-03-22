@@ -10,7 +10,7 @@ CORS(app, supports_credentials=True, origins="http://localhost:5173")
 app.secret_key = 'mitwpu'
 
 # MySQL Connection using SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:pk.101104@localhost/ims'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/ims'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
