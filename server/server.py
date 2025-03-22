@@ -15,13 +15,29 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Define Admin Model
+# Admin Model
 class Admin(db.Model):
     __tablename__ = 'admin'
     sr_no = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+
+# School supervisors Model    
+class School_sup(db.Model):
+    __tablename__ = 'school_supervisor'
+    sup_id = db.Column(db.Integer, primary_key=True)
+    sup_name = db.Column(db.String(100), nullable=False)
+    sup_contact = db.Column(db.String(45), unique=True, nullable=False)
+    sup_email = db.Column(db.String(100), unique=True, nullable=False)
+
+# Company supervisor Model    
+class Company_sup(db.Model):
+    __tablename__ = 'company_supervisor'
+    sup_id = db.Column(db.Integer, primary_key=True)
+    sup_name = db.Column(db.String(100), nullable=False)
+    sup_contact = db.Column(db.String(45), unique=True, nullable=False)
+    sup_email = db.Column(db.String(100), unique=True, nullable=False)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -39,7 +55,7 @@ def login():
     if user:
         session['loggedin'] = True
         session['email'] = user.email
-        session['name'] = user.name  # Storing name instead of username
+        session['name'] = user.name  
         return jsonify({'status': 'success', 'message': 'Logged in successfully!', 'user': {'email': user.email, 'name': user.name}})
     else:
         return jsonify({'status': 'error', 'message': 'Incorrect email or password'}), 401
