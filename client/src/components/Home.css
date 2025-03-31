@@ -1,5 +1,4 @@
-/* Home.css - Ensuring Pixel-Perfect Dashboard Layout */
-
+/* Global Styles */
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;
@@ -7,6 +6,7 @@ body {
   background: #f4f4f4;
 }
 
+/* Main Container */
 .dashboard-container {
   display: flex;
   height: 100vh;
@@ -15,7 +15,7 @@ body {
 /* Sidebar Styling */
 .sidebar {
   width: 250px;
-  background: #333;
+  background: #1e1e2d;
   color: white;
   padding: 20px;
   display: flex;
@@ -26,6 +26,7 @@ body {
   font-size: 24px;
   margin-bottom: 20px;
   text-align: center;
+  font-weight: bold;
 }
 
 .sidebar-menu {
@@ -34,13 +35,27 @@ body {
 }
 
 .sidebar-menu li {
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
   transition: background 0.3s;
 }
 
-.sidebar-menu li:hover, .sidebar-menu .active {
-  background: #444;
+.sidebar-menu li a {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-menu li:hover,
+.sidebar-menu .active {
+  background: #343a40;
+  border-radius: 5px;
 }
 
 .logout-button {
@@ -48,8 +63,19 @@ body {
   background: red;
   color: white;
   border: none;
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.logout-button:hover {
+  background: darkred;
 }
 
 /* Main Content Styling */
@@ -58,6 +84,7 @@ body {
   padding: 20px;
 }
 
+/* Top Bar */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -75,10 +102,10 @@ body {
   font-weight: bold;
 }
 
-/* Overview Section */
+/* Overview Section 
 .overview h1 {
   margin-bottom: 20px;
-}
+}*/
 
 .stats {
   display: flex;

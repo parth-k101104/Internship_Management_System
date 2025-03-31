@@ -10,6 +10,7 @@ CORS(app, supports_credentials=True, origins="http://localhost:5173")
 app.secret_key = 'mitwpu'
 
 # MySQL Connection using SQLAlchemy
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:pk.101104@localhost/ims'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/ims'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -22,6 +23,39 @@ class Admin(db.Model):
     name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+   
+# Student Model 
+class Student(db.Model):
+    __tablename__ = 'students'
+    PRN = db.Column(db.Integer, primary_key=True)
+    First_name = db.Column(db.String(100), nullable=False)
+    Middle_name = db.Column(db.String(100), nullable=False)
+    Last_name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    phone = db.Column(db.String(45), nullable=False)
+    year = db.Column(db.String(45), nullable=False)
+    semester = db.Column(db.String(45), nullable=False)
+    company_id = db.Column(db.Integer, nullable=False)
+    stipend = db.Column(db.String(45), nullable=True)
+    school_sup = db.Column(db.String(45), nullable=True)
+    company_sup = db.Column(db.String(45), nullable=True)
+    
+# On-Campus Companies Model
+class OnCampusCompany(db.Model):
+    __tablename__ = 'on_campus_companies'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    company_name = db.Column(db.String(100), primary_key=True)
+    year = db.Column(db.String(45), primary_key=True)
+    semester = db.Column(db.String(45), primary_key=True)
+
+# Off-Campus Companies Model
+class OffCampusCompany(db.Model):
+    __tablename__ = 'off_campus_companies'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    company_name = db.Column(db.String(100), primary_key=True)
+    year = db.Column(db.String(45), primary_key=True)
+    semester = db.Column(db.String(45), primary_key=True)
+
 
 # School supervisors Model    
 class School_sup(db.Model):
@@ -73,6 +107,22 @@ def check_session():
         return jsonify({'status': 'success', 'logged_in': True, 'user': {'email': session.get('email'), 'name': session.get('name')}})
     else:
         return jsonify({'status': 'error', 'logged_in': False})
+    
+@app.route('/get_dashboard_data', methods=['GET'])
+def get_dashboard_data():
+    try:
+        total_students = Student.query.count()
+        total_on_campus_companies = OnCampusCompany.query.count()
+        total_off_campus_companies = OffCampusCompany.query.count()
+
+        return jsonify({
+            "total_students": total_students,
+            "on_campus_companies": total_on_campus_companies,
+            "off_campus_companies": total_off_campus_companies
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

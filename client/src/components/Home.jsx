@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaUserFriends, FaShoppingCart, FaChartLine } from "react-icons/fa";
+import { FaUserFriends, FaBuilding, FaChartLine } from "react-icons/fa";
 import { AiFillSetting } from "react-icons/ai";
 import "./Home.css";
 
@@ -9,6 +9,11 @@ const Home = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState({
+    total_students: 0,
+    on_campus_companies: 0,
+    off_campus_companies: 0
+  });
 
   useEffect(() => {
     const checkSession = async () => {
@@ -26,8 +31,22 @@ const Home = () => {
         setLoading(false);
       }
     };
+
     checkSession();
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/get_dashboard_data");
+        setDashboardData(response.data);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -46,17 +65,11 @@ const Home = () => {
         <h2 className="sidebar-title">One</h2>
         <ul className="sidebar-menu">
           <li className="active">Dashboard</li>
-          <li>Tables</li>
-          <li>Forms</li>
-          <li>UI</li>
-          <li>Responsive</li>
-          <li>Styles</li>
-          <li>Profile</li>
-          <li>Login</li>
-          <li>Error</li>
-          <li className="dropdown">Dropdown</li>
-          <li>GitHub</li>
-          <li>React Version</li>
+          <li>Student Details</li>
+          <li>Stipend Details</li>
+          <li>Company Details</li>
+          <li>School Supervisors</li>
+          <li>Company Supervisors</li>
         </ul>
         <button className="logout-button" onClick={handleLogout}>Logout</button>
       </aside>
@@ -72,43 +85,22 @@ const Home = () => {
           <div className="stats">
             <div className="stat-card up">
               <FaUserFriends className="icon" />
-              <p>Clients</p>
-              <h2>512</h2>
-              <span className="increase">+12%</span>
+              <h1>{dashboardData.total_students}</h1>
+              <h2>Total Students</h2>
               <AiFillSetting className="settings-icon" />
             </div>
-            <div className="stat-card down">
-              <FaShoppingCart className="icon" />
-              <p>Sales</p>
-              <h2>$7,770</h2>
-              <span className="decrease">-12%</span>
+            <div className="stat-card">
+              <FaBuilding className="icon" />
+              <h1>{dashboardData.on_campus_companies}</h1>
+              <h2>On-Campus Companies</h2>
               <AiFillSetting className="settings-icon" />
             </div>
-            <div className="stat-card overflow">
+            <div className="stat-card">
               <FaChartLine className="icon" />
-              <p>Performance</p>
-              <h2>256%</h2>
-              <span className="overflow-text">Overflow</span>
+              <h1>{dashboardData.off_campus_companies}</h1>
+              <h2>Off-Campus Companies</h2>
               <AiFillSetting className="settings-icon" />
             </div>
-          </div>
-        </section>
-
-        <section className="transactions">
-          <div className="transaction">
-            <p>$375.53</p>
-            <span>3 days ago via Turcotte</span>
-            <span className="tag deposit">Deposit</span>
-          </div>
-          <div className="transaction">
-            <p>$470.26</p>
-            <span>3 days ago via Murazik - Graham</span>
-            <span className="tag payment">Payment</span>
-          </div>
-          <div className="transaction">
-            <p>$971.34</p>
-            <span>5 days ago via Fahey - Keebler</span>
-            <span className="tag invoice">Invoice</span>
           </div>
         </section>
       </main>
