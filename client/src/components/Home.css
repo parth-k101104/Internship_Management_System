@@ -52,10 +52,15 @@ body {
   gap: 10px;
 }
 
-.sidebar-menu li:hover,
-.sidebar-menu .active {
+.sidebar-menu li:hover {
   background: #343a40;
   border-radius: 5px;
+}
+
+.sidebar-menu li.active {
+  background: #343a40;
+  border-radius: 5px;
+  font-weight: bold;
 }
 
 .logout-button {
@@ -102,10 +107,12 @@ body {
   font-weight: bold;
 }
 
-/* Overview Section 
 .overview h1 {
+  margin-top: 20px;
   margin-bottom: 20px;
-}*/
+  font-size: 30px;
+  text-align: center;
+}
 
 .stats {
   display: flex;
@@ -120,11 +127,17 @@ body {
   border-radius: 8px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .icon {
-  font-size: 30px;
+  font-size: 60px;
   color: #333;
+  padding-bottom: 20px;
 }
 
 .increase {
@@ -176,4 +189,23 @@ body {
 
 .invoice {
   background: lightblue;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loading-text {
+  font-size: 20px;
+  font-weight: bold;
+  color: #555;
+  animation: fadeInOut 1s infinite alternate;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
 }

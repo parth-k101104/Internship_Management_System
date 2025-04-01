@@ -17,25 +17,25 @@ const Home = () => {
     off_campus_companies: 0
   });
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/check_session", { withCredentials: true });
-        if (response.data.logged_in) {
-          setUser(response.data.user);
-        } else {
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Session check error:", error);
-        navigate("/");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const checkSession = async () => {
+  //     try {
+  //       const response = await axios.get("http://localhost:5000/check_session", { withCredentials: true });
+  //       if (response.data.logged_in) {
+  //         setUser(response.data.user);
+  //       } else {
+  //         navigate("/");
+  //       }
+  //     } catch (error) {
+  //       console.error("Session check error:", error);
+  //       navigate("/");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    checkSession();
-  }, [navigate]);
+  //   checkSession();
+  // }, [navigate]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -69,23 +69,20 @@ const Home = () => {
         <section className="overview">
           <h1>Overview</h1>
           <div className="stats">
-            <div className="stat-card up">
+            <div className="stat-card">
               <FaUserFriends className="icon" />
               <h1>{dashboardData.total_students}</h1>
               <h2>Total Students</h2>
-              <AiFillSetting className="settings-icon" />
             </div>
             <div className="stat-card">
               <FaBuilding className="icon" />
               <h1>{dashboardData.on_campus_companies}</h1>
               <h2>On-Campus Companies</h2>
-              <AiFillSetting className="settings-icon" />
             </div>
             <div className="stat-card">
               <FaChartLine className="icon" />
               <h1>{dashboardData.off_campus_companies}</h1>
               <h2>Off-Campus Companies</h2>
-              <AiFillSetting className="settings-icon" />
             </div>
           </div>
         </section>
