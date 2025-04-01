@@ -121,14 +121,18 @@ def get_dashboard_data():
 def get_student_details():
     year = request.args.get('year')
     semester = request.args.get('semester')
+    dept_id = request.args.get('dept_id')  # Added department filter
 
     if not year:
-        return jsonify({"error": "Year is required"}), 400  # Year is mandatory, but semester is optional
+        return jsonify({"error": "Year is required"}), 400  # Year is mandatory, but semester and dept_id are optional
 
     query = Student.query.filter_by(year=year)
 
     if semester:  # Apply semester filter only if selected
         query = query.filter_by(semester=semester)
+
+    if dept_id:  # Apply department filter only if selected
+        query = query.filter_by(dept_id=dept_id)
 
     students = query.all()
     on_campus_students = query.filter_by(category='on').count()
@@ -145,7 +149,8 @@ def get_student_details():
         "phone": s.phone,
         "category": s.category,
         "stipend": s.stipend,
-        "company_name": s.company_name
+        "company_name": s.company_name,
+        "dept_id": s.dept_id  # Include dept_id in response
     } for s in students]
 
     return jsonify({

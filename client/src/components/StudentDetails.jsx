@@ -11,6 +11,7 @@ const StudentDetails = () => {
   const [loading, setLoading] = useState(false);
   const [year, setYear] = useState(""); 
   const [semester, setSemester] = useState(""); 
+  const [dept_id, setDeptId] = useState(""); // State for department
   const [studentData, setStudentData] = useState({
     total_students: 0,
     on_campus_students: 0,
@@ -24,7 +25,7 @@ const StudentDetails = () => {
         setLoading(true);
         try {
           const response = await axios.get("http://localhost:5000/get_student_details", {
-            params: { year, semester }
+            params: { year, semester, dept_id } // Add dept_id to the query parameters
           });
           setStudentData(response.data.stats);
           setStudents(response.data.students);
@@ -36,7 +37,7 @@ const StudentDetails = () => {
     };
 
     fetchStudentData();
-  }, [year, semester]);
+  }, [year, semester, dept_id]); // Re-fetch data when any filter changes
 
   return (
     <div className="dashboard-container">
@@ -59,6 +60,15 @@ const StudentDetails = () => {
             <option value="">All Semesters</option>
             <option value="6">6</option>
             <option value="7">7</option>
+          </select>
+
+          <label>Department:</label>
+          <select value={dept_id} onChange={(e) => setDeptId(e.target.value)}>
+            <option value="">Select Department</option>
+            <option value="1">CSE</option>
+            <option value="2">CSBS</option>
+            <option value="3">AIDS</option>
+            <option value="4">CSF</option>
           </select>
         </div>
 
@@ -97,6 +107,7 @@ const StudentDetails = () => {
                   <th>Internship Type</th>
                   <th>Stipend</th>
                   <th>Company Name</th>
+                  <th>Department</th> {/* Add Department Column */}
                 </tr>
               </thead>
               <tbody>
@@ -110,11 +121,12 @@ const StudentDetails = () => {
                       <td>{student.category}</td>
                       <td>{student.stipend || "N/A"}</td>
                       <td>{student.company_name}</td>
+                      <td>{student.dept_id}</td> {/* Display Department */}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7">No students found for the selected criteria.</td>
+                    <td colSpan="8">No students found for the selected criteria.</td>
                   </tr>
                 )}
               </tbody>
