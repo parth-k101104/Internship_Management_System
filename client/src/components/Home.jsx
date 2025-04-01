@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaUserFriends, FaBuilding, FaChartLine } from "react-icons/fa";
+import {FaUserFriends, FaBuilding, FaChartLine, FaBriefcase, FaMoneyBillAlt, FaArrowDown, FaChartBar, FaMapMarkerAlt} from "react-icons/fa";
 import { AiFillSetting } from "react-icons/ai";
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
@@ -65,7 +65,7 @@ const Home = () => {
     <div className="dashboard-container">
       <Sidebar handleLogout={handleLogout} />
       <main className="content">
-        <Navbar loading={loading} user={user} />
+        <Navbar  />
         <section className="overview">
           <h1>Overview</h1>
           <div className="stats">
@@ -80,7 +80,7 @@ const Home = () => {
               <h2>On-Campus Companies</h2>
             </div>
             <div className="stat-card">
-              <FaChartLine className="icon" />
+              <FaMapMarkerAlt className="icon" />
               <h1>{dashboardData.off_campus_companies}</h1>
               <h2>Off-Campus Companies</h2>
             </div>

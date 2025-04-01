@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaUserFriends, FaBuilding, FaChartLine } from "react-icons/fa";
-import { AiFillSetting } from "react-icons/ai";
+import {FaUserFriends, FaBuilding, FaChartLine, FaBriefcase, FaMoneyBillAlt, FaArrowDown, FaChartBar, FaMapMarkerAlt } from "react-icons/fa";
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
 import "./Home.css";
@@ -53,17 +52,17 @@ const StipendDetails = () => {
             <h1>Stipend Details</h1>
             <div className="stats">
               <div className="stat-card">
-                <FaUserFriends className="icon" />
+                <FaMoneyBillAlt className="icon" />
                 <h1>{studentData.highest_stipend}</h1>
                 <h2>Highest Stipend</h2>
               </div>
               <div className="stat-card">
-                <FaBuilding className="icon" />
+                <FaArrowDown className="icon" />
                 <h1>{studentData.lowest_stipend}</h1>
                 <h2>Lowest Stipend</h2>
               </div>
               <div className="stat-card">
-                <FaChartLine className="icon" />
+                <FaChartBar className="icon" />
                 <h1>{studentData.avg_stipend}</h1>
                 <h2>Average Stipend</h2>
               </div>

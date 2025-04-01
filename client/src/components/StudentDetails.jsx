@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaUserFriends, FaBuilding, FaChartLine } from "react-icons/fa";
-import { AiFillSetting } from "react-icons/ai";
+import {FaUserFriends, FaBuilding, FaChartLine, FaBriefcase, FaMoneyBillAlt, FaArrowDown, FaChartBar, FaMapMarkerAlt } from "react-icons/fa";
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
 import "./Home.css";
@@ -63,7 +62,7 @@ const StudentDetails = () => {
                 <h2>On-Campus Placement</h2>
               </div>
               <div className="stat-card">
-                <FaChartLine className="icon" />
+                <FaBriefcase className="icon" />
                 <h1>{studentData.off_campus_students}</h1>
                 <h2>Off-Campus Placement</h2>
               </div>

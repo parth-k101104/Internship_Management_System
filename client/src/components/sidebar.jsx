@@ -36,7 +36,7 @@ const Sidebar = () => {
 
   return (
     <aside className="sidebar">
-      <h2 className="sidebar-title">Internship Management</h2>
+      <h2 className="sidebar-title">Internship Management System</h2>
       <ul className="sidebar-menu">
         {menuItems.map((item) => (
           <li
