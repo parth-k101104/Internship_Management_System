@@ -1,55 +1,72 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {FaUserFriends, FaBuilding, FaChartLine, FaBriefcase, FaMoneyBillAlt, FaArrowDown, FaChartBar, FaMapMarkerAlt } from "react-icons/fa";
+import { FaUserFriends, FaBuilding, FaBriefcase } from "react-icons/fa";
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
 import "./Home.css";
 
 const StudentDetails = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [year, setYear] = useState(""); 
+  const [semester, setSemester] = useState(""); 
   const [studentData, setStudentData] = useState({
     total_students: 0,
-    on_campus: 0,
-    off_campus: 0,
+    on_campus_students: 0,
+    off_campus_students: 0,
   });
+  const [students, setStudents] = useState([]); // Store student records
 
   useEffect(() => {
-    // Simulate a loading delay of 1 second
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer); // Cleanup timeout on unmount
-  }, []);
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/get_student_details");
-        setStudentData(response.data);
-      } catch (error) {
-        console.error("Error fetching student details:", error);
+    const fetchStudentData = async () => {
+      if (year) {  // Fetch data if year is selected
+        setLoading(true);
+        try {
+          const response = await axios.get("http://localhost:5000/get_student_details", {
+            params: { year, semester }
+          });
+          setStudentData(response.data.stats);
+          setStudents(response.data.students);
+        } catch (error) {
+          console.error("Error fetching student details:", error);
+        }
+        setLoading(false);
       }
     };
 
-    fetchDashboardData();
-  }, []);
+    fetchStudentData();
+  }, [year, semester]);
 
   return (
     <div className="dashboard-container">
       <Sidebar navigate={navigate} />
       <main className="content">
         <Navbar />
+        <h1>Student Details</h1>
+
+        {/* Dropdown Selection */}
+        <div className="filters">
+          <label>Year:</label>
+          <select value={year} onChange={(e) => setYear(e.target.value)}>
+            <option value="">Select Year</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+
+          <label>Semester:</label>
+          <select value={semester} onChange={(e) => setSemester(e.target.value)}>
+            <option value="">All Semesters</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+          </select>
+        </div>
 
         {loading ? (
-          <div className="loading-container">
-            <p className="loading-text">Loading Student Details...</p>
-          </div>
+          <p>Loading Student Details...</p>
         ) : (
-          <section className="overview">
-            <h1>Student Details</h1>
+          <>
+            {/* Stat Cards */}
             <div className="stats">
               <div className="stat-card">
                 <FaUserFriends className="icon" />
@@ -67,7 +84,42 @@ const StudentDetails = () => {
                 <h2>Off-Campus Placement</h2>
               </div>
             </div>
-          </section>
+
+            {/* Student Table */}
+            <h2>Student List</h2>
+            <table className="student-table">
+              <thead>
+                <tr>
+                  <th>PRN</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Internship Type</th>
+                  <th>Stipend</th>
+                  <th>Company Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.length > 0 ? (
+                  students.map((student) => (
+                    <tr key={student.PRN}>
+                      <td>{student.PRN}</td>
+                      <td>{`${student.First_name} ${student.Middle_name} ${student.Last_name}`}</td>
+                      <td>{student.email}</td>
+                      <td>{student.phone}</td>
+                      <td>{student.category}</td>
+                      <td>{student.stipend || "N/A"}</td>
+                      <td>{student.company_name}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7">No students found for the selected criteria.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </>
         )}
       </main>
     </div>

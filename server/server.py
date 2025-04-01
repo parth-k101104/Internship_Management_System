@@ -119,22 +119,43 @@ def get_dashboard_data():
 
 @app.route('/get_student_details', methods=['GET'])
 def get_student_details():
-    try:
-        total_students = Student.query.count()
-        
-        # Count students placed in on-campus companies
-        total_on_campus_placed = Student.query.filter_by(category='on').count()
-        
-        # Count students placed in off-campus companies
-        total_off_campus_placed = Student.query.filter_by(category='off').count()
+    year = request.args.get('year')
+    semester = request.args.get('semester')
 
-        return jsonify({
+    if not year:
+        return jsonify({"error": "Year is required"}), 400  # Year is mandatory, but semester is optional
+
+    query = Student.query.filter_by(year=year)
+
+    if semester:  # Apply semester filter only if selected
+        query = query.filter_by(semester=semester)
+
+    students = query.all()
+    on_campus_students = query.filter_by(category='on').count()
+    off_campus_students = query.filter_by(category='off').count()
+
+    total_students = len(students)
+
+    student_list = [{
+        "PRN": s.PRN,
+        "First_name": s.First_name,
+        "Middle_name": s.Middle_name,
+        "Last_name": s.Last_name,
+        "email": s.email,
+        "phone": s.phone,
+        "category": s.category,
+        "stipend": s.stipend,
+        "company_name": s.company_name
+    } for s in students]
+
+    return jsonify({
+        "stats": {
             "total_students": total_students,
-            "on_campus_students": total_on_campus_placed,
-            "off_campus_students": total_off_campus_placed
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+            "on_campus_students": on_campus_students,
+            "off_campus_students": off_campus_students
+        },
+        "students": student_list
+    })
     
 
 from sqlalchemy import func
