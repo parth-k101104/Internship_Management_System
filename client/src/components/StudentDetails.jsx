@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUserFriends, FaBuilding, FaChartLine } from "react-icons/fa";
 import { AiFillSetting } from "react-icons/ai";
-import Sidebar from "./Sidebar";
-import Navbar from "./Navbar";
+import Sidebar from "./sidebar";
+import Navbar from "./navbar";
 import "./Home.css";
 
 const StudentDetails = () => {
@@ -23,6 +23,19 @@ const StudentDetails = () => {
     }, 1000);
 
     return () => clearTimeout(timer); // Cleanup timeout on unmount
+  }, []);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/get_student_details");
+        setStudentData(response.data);
+      } catch (error) {
+        console.error("Error fetching student details:", error);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   return (
@@ -46,12 +59,12 @@ const StudentDetails = () => {
               </div>
               <div className="stat-card">
                 <FaBuilding className="icon" />
-                <h1>{studentData.on_campus}</h1>
+                <h1>{studentData.on_campus_students}</h1>
                 <h2>On-Campus Placement</h2>
               </div>
               <div className="stat-card">
                 <FaChartLine className="icon" />
-                <h1>{studentData.off_campus}</h1>
+                <h1>{studentData.off_campus_students}</h1>
                 <h2>Off-Campus Placement</h2>
               </div>
             </div>

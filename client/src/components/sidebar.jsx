@@ -1,8 +1,9 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios"; // Ensure you have axios imported
 import "./Home.css";
 
-const Sidebar = ({ handleLogout }) => {
+const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();  // Get current route (pathname)
 
@@ -19,6 +20,18 @@ const Sidebar = ({ handleLogout }) => {
   // Function to handle menu item click
   const handleItemClick = (path) => {
     navigate(path); // Navigate to the clicked path
+  };
+
+  // Function to handle logout
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/logout", {}, { withCredentials: true });
+      if (response.data.status === "success") {
+        navigate("/"); // Redirect to login page after logout
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (

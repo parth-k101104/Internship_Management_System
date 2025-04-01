@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUserFriends, FaBuilding, FaChartLine } from "react-icons/fa";
 import { AiFillSetting } from "react-icons/ai";
-import Sidebar from "./Sidebar";
-import Navbar from "./Navbar";
+import Sidebar from "./sidebar";
+import Navbar from "./navbar";
 import "./Home.css";
 
 const StipendDetails = () => {
@@ -25,6 +25,19 @@ const StipendDetails = () => {
     return () => clearTimeout(timer); // Cleanup timeout on unmount
   }, []);
 
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/get_stipend_details");
+        setStipendData(response.data);
+      } catch (error) {
+        console.error("Error fetching student details:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   return (
     <div className="dashboard-container">
       <Sidebar navigate={navigate} />
@@ -41,17 +54,17 @@ const StipendDetails = () => {
             <div className="stats">
               <div className="stat-card">
                 <FaUserFriends className="icon" />
-                <h1>{studentData.total_students}</h1>
+                <h1>{studentData.highest_stipend}</h1>
                 <h2>Highest Stipend</h2>
               </div>
               <div className="stat-card">
                 <FaBuilding className="icon" />
-                <h1>{studentData.on_campus}</h1>
+                <h1>{studentData.lowest_stipend}</h1>
                 <h2>Lowest Stipend</h2>
               </div>
               <div className="stat-card">
                 <FaChartLine className="icon" />
-                <h1>{studentData.off_campus}</h1>
+                <h1>{studentData.avg_stipend}</h1>
                 <h2>Average Stipend</h2>
               </div>
             </div>

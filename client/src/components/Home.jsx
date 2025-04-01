@@ -17,25 +17,25 @@ const Home = () => {
     off_campus_companies: 0
   });
 
-  // useEffect(() => {
-  //   const checkSession = async () => {
-  //     try {
-  //       const response = await axios.get("http://localhost:5000/check_session", { withCredentials: true });
-  //       if (response.data.logged_in) {
-  //         setUser(response.data.user);
-  //       } else {
-  //         navigate("/");
-  //       }
-  //     } catch (error) {
-  //       console.error("Session check error:", error);
-  //       navigate("/");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/check_session", { withCredentials: true });
+        if (response.data.logged_in) {
+          setUser(response.data.user);
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Session check error:", error);
+        navigate("/");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   checkSession();
-  // }, [navigate]);
+    checkSession();
+  }, [navigate]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {

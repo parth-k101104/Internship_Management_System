@@ -117,6 +117,56 @@ def get_dashboard_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/get_student_details', methods=['GET'])
+def get_student_details():
+    try:
+        total_students = Student.query.count()
+        
+        # Count students placed in on-campus companies
+        total_on_campus_placed = Student.query.filter_by(category='on').count()
+        
+        # Count students placed in off-campus companies
+        total_off_campus_placed = Student.query.filter_by(category='off').count()
+
+        return jsonify({
+            "total_students": total_students,
+            "on_campus_students": total_on_campus_placed,
+            "off_campus_students": total_off_campus_placed
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+from sqlalchemy import func
+
+@app.route('/get_stipend_details', methods=['GET'])
+def get_stipend_details():
+    try:
+        # Query for the highest stipend
+        highest_stipend = db.session.query(func.max(Student.stipend)).scalar()
+
+        # Query for the lowest stipend
+        lowest_stipend = db.session.query(func.min(Student.stipend)).scalar()
+
+        # Query for the average stipend
+        average_stipend = db.session.query(func.avg(Student.stipend)).scalar()
+
+        # Ensure that stipend data exists and handle None (null) cases
+        if highest_stipend is None:
+            highest_stipend = "No stipend data available"
+        if lowest_stipend is None:
+            lowest_stipend = "No stipend data available"
+        if average_stipend is None:
+            average_stipend = "No stipend data available"
+
+        return jsonify({
+            "highest_stipend": highest_stipend,
+            "lowest_stipend": lowest_stipend,
+            "avg_stipend": average_stipend
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == '__main__':
