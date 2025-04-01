@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUserFriends, FaBuilding, FaChartLine } from "react-icons/fa";
 import { AiFillSetting } from "react-icons/ai";
+import Sidebar from "./sidebar";
+import Navbar from "./navbar";
 import "./Home.css";
 
 const Home = () => {
@@ -61,25 +63,9 @@ const Home = () => {
 
   return (
     <div className="dashboard-container">
-      <aside className="sidebar">
-        <h2 className="sidebar-title">One</h2>
-        <ul className="sidebar-menu">
-          <li className="active">Dashboard</li>
-          <li>Student Details</li>
-          <li>Stipend Details</li>
-          <li>Company Details</li>
-          <li>School Supervisors</li>
-          <li>Company Supervisors</li>
-        </ul>
-        <button className="logout-button" onClick={handleLogout}>Logout</button>
-      </aside>
-
+      <Sidebar handleLogout={handleLogout} />
       <main className="content">
-        <header className="topbar">
-          <div className="search">Search (Ctrl+K)</div>
-          <div className="user-info">{loading ? "Loading..." : user ? user.name : "John Doe"}</div>
-        </header>
-
+        <Navbar loading={loading} user={user} />
         <section className="overview">
           <h1>Overview</h1>
           <div className="stats">
