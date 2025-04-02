@@ -14,28 +14,29 @@ const Home = () => {
   const [dashboardData, setDashboardData] = useState({
     total_students: 0,
     on_campus_companies: 0,
-    off_campus_companies: 0
+    off_campus_companies: 0,
+    avg_stipend: 0,
   });
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/check_session", { withCredentials: true });
-        if (response.data.logged_in) {
-          setUser(response.data.user);
-        } else {
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Session check error:", error);
-        navigate("/");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const checkSession = async () => {
+  //     try {
+  //       const response = await axios.get("http://localhost:5000/check_session", { withCredentials: true });
+  //       if (response.data.logged_in) {
+  //         setUser(response.data.user);
+  //       } else {
+  //         navigate("/");
+  //       }
+  //     } catch (error) {
+  //       console.error("Session check error:", error);
+  //       navigate("/");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    checkSession();
-  }, [navigate]);
+  //   checkSession();
+  // }, [navigate]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -68,21 +69,26 @@ const Home = () => {
         <Navbar  />
         <section className="overview">
           <h1>Overview</h1>
-          <div className="stats">
-            <div className="stat-card">
+          <div className="stats1">
+            <div className="stat-card1">
               <FaUserFriends className="icon" />
               <h1>{dashboardData.total_students}</h1>
               <h2>Total Students</h2>
             </div>
-            <div className="stat-card">
+            <div className="stat-card1">
               <FaBuilding className="icon" />
               <h1>{dashboardData.on_campus_companies}</h1>
               <h2>On-Campus Companies</h2>
             </div>
-            <div className="stat-card">
+            <div className="stat-card1">
               <FaMapMarkerAlt className="icon" />
               <h1>{dashboardData.off_campus_companies}</h1>
               <h2>Off-Campus Companies</h2>
+            </div>
+            <div className="stat-card1">
+              <FaChartBar className="icon" />
+              <h1>{dashboardData.avg_stipend}</h1>
+              <h2>Average Stipend</h2>
             </div>
           </div>
         </section>

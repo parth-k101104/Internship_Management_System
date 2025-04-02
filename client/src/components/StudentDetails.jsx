@@ -44,33 +44,41 @@ const StudentDetails = () => {
       <Sidebar navigate={navigate} />
       <main className="content">
         <Navbar />
-        <h1>Student Details</h1>
+        <section className="overview">
+          <h1>Student Details</h1>
 
-        {/* Dropdown Selection */}
-        <div className="filters">
-          <label>Year:</label>
-          <select value={year} onChange={(e) => setYear(e.target.value)}>
-            <option value="">Select Year</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-          </select>
+          {/* Dropdown Selection */}
+          <div className="filters">
+            <div className="filters-1">
+              <label className="label">Year:</label>
+              <select className="select" value={year} onChange={(e) => setYear(e.target.value)}>
+                <option value="">Select Year</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+              </select>
+            </div>
 
-          <label>Semester:</label>
-          <select value={semester} onChange={(e) => setSemester(e.target.value)}>
-            <option value="">All Semesters</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-          </select>
+            <div className="filters-1">
+              <label className="label">Semester:</label>
+              <select className="select" value={semester} onChange={(e) => setSemester(e.target.value)}>
+                <option value="">All Semesters</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+              </select>
+            </div>
 
-          <label>Department:</label>
-          <select value={dept_id} onChange={(e) => setDeptId(e.target.value)}>
-            <option value="">Select Department</option>
-            <option value="1">CSE</option>
-            <option value="2">CSBS</option>
-            <option value="3">AIDS</option>
-            <option value="4">CSF</option>
-          </select>
-        </div>
+            <div className="filters-1">
+            <label className="label">Department:</label>
+              <select className="select" value={dept_id} onChange={(e) => setDeptId(e.target.value)}>
+                <option value="">Select Department</option>
+                <option value="1">CSE</option>
+                <option value="2">CSBS</option>
+                <option value="3">AIDS</option>
+                <option value="4">CSF</option>
+              </select>
+            </div>
+          </div>
+        </section>
 
         {loading ? (
           <p>Loading Student Details...</p>
@@ -96,41 +104,43 @@ const StudentDetails = () => {
             </div>
 
             {/* Student Table */}
-            <h2>Student List</h2>
-            <table className="student-table">
-              <thead>
-                <tr>
-                  <th>PRN</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Internship Type</th>
-                  <th>Stipend</th>
-                  <th>Company Name</th>
-                  <th>Department</th> {/* Add Department Column */}
-                </tr>
-              </thead>
-              <tbody>
-                {students.length > 0 ? (
-                  students.map((student) => (
-                    <tr key={student.PRN}>
-                      <td>{student.PRN}</td>
-                      <td>{`${student.First_name} ${student.Middle_name} ${student.Last_name}`}</td>
-                      <td>{student.email}</td>
-                      <td>{student.phone}</td>
-                      <td>{student.category}</td>
-                      <td>{student.stipend || "N/A"}</td>
-                      <td>{student.company_name}</td>
-                      <td>{student.dept_id}</td> {/* Display Department */}
-                    </tr>
-                  ))
-                ) : (
+            <div className="table">
+              <h2>Student List</h2>
+              <table className="student-table">
+                <thead>
                   <tr>
-                    <td colSpan="8">No students found for the selected criteria.</td>
+                    <th>PRN</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Internship Type</th>
+                    <th>Stipend</th>
+                    <th>Company Name</th>
+                    <th>Department</th> {/* Add Department Column */}
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {students.length > 0 ? (
+                    students.map((student) => (
+                      <tr key={student.PRN}>
+                        <td>{student.PRN}</td>
+                        <td>{`${student.First_name} ${student.Middle_name} ${student.Last_name}`}</td>
+                        <td>{student.email}</td>
+                        <td>{student.phone}</td>
+                        <td>{student.category}</td>
+                        <td>{student.stipend || "N/A"}</td>
+                        <td>{student.company_name}</td>
+                        <td>{student.dept_id}</td> {/* Display Department */}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="8">No students found for the selected criteria.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </>
         )}
       </main>

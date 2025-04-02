@@ -108,11 +108,13 @@ def get_dashboard_data():
         # Count companies based on category (on-campus and off-campus)
         total_on_campus_companies = Companies.query.filter_by(category='on').count()
         total_off_campus_companies = Companies.query.filter_by(category='off').count()
+        average_stipend = db.session.query(func.avg(Student.stipend)).scalar()
 
         return jsonify({
             "total_students": total_students,
             "on_campus_companies": total_on_campus_companies,
-            "off_campus_companies": total_off_campus_companies
+            "off_campus_companies": total_off_campus_companies,
+            "avg_stipend": average_stipend
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500

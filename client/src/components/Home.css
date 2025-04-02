@@ -109,6 +109,46 @@ body {
   text-align: center;
 }
 
+.filters{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-bottom: 20px;
+}
+
+.label{
+  margin-right: 8px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.select{
+  background-color: #4d4d59;
+  color: white;
+  padding: 10px 15px;
+  font-size: 17px;
+  width: 150px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.select:hover {
+  background-color: #2e2e3a;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  z-index: 1;
+  overflow: hidden;
+}
+
 .stats {
   display: flex;
   gap: 20px;
@@ -131,6 +171,35 @@ body {
 }
 
 .stat-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.stats1{
+  display: flex;
+  flex-wrap: wrap;  /* Wrap items to next row */
+  justify-content: center;  /* Center the items */
+  gap: 20px;  /* Space between cards */
+  max-width: 800px;  /* Adjust width */
+  margin: auto;
+}
+
+.stat-card1{
+  background: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  width: calc(50% - 10px); /* 50% width minus gap */
+  height: 200px; /* Adjust height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.stat-card1:hover {
   transform: translateY(-10px);
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
@@ -209,4 +278,49 @@ body {
 @keyframes fadeInOut {
   0% { opacity: 0.5; }
   100% { opacity: 1; }
+}
+
+.table{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  overflow-x: auto;
+  max-height: 500px; /* Adjust height as needed */
+  overflow-y: auto;
+}
+
+.table h2{
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.student-table{
+  border: black;
+  border-collapse: collapse;
+}
+
+.student-table th{
+  height: 40px;
+  width: 120px;
+  background-color: #4d4d59;
+  color: white;
+  border-radius: 5px;
+}
+
+.student-table td{
+  height: 30px;
+  width: 120px;
+  background-color: #fafafa;
+  color: black;
+  border-radius: 5px;
+}
+
+.student-table tbody tr:nth-child(odd) {
+  background-color: #ffffff; /* White */
+}
+
+.student-table tbody tr:nth-child(even) {
+  background-color: #f2f2f2; /* Light Grey */
 }
