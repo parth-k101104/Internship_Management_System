@@ -330,3 +330,24 @@ body {
 .student-table th{
   border: 1px solid #4d4d59;
 }
+
+.toggle-buttons {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  
+}
+
+.toggle-buttons button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  background-color: #f1f1f1;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.toggle-buttons .active {
+  background-color: #4d4d59;
+  color: white;
+}

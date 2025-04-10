@@ -174,12 +174,9 @@ def get_stipend_details():
         semester = request.args.get('semester')
         dept_id = request.args.get('dept_id')
 
-        # Base query
-        query = db.session.query(func.max(Student.stipend).label("highest"),
-                                 func.min(Student.stipend).label("lowest"),
-                                 func.avg(Student.stipend).label("average"))
+        # Base query with filters applied before aggregations
+        query = db.session.query(Student.stipend)
 
-        # Apply filters if provided
         if year:
             query = query.filter(Student.year == year)
         if semester:
@@ -187,11 +184,16 @@ def get_stipend_details():
         if dept_id:
             query = query.filter(Student.dept_id == dept_id)
 
-        result = query.first()
+        # Filter out NULL and 0 stipends for lowest calculation
+        non_zero_query = query.filter(Student.stipend != None, Student.stipend > 0)
 
-        highest_stipend = result.highest if result.highest is not None else "No stipend data available"
-        lowest_stipend = result.lowest if result.lowest is not None else "No stipend data available"
-        average_stipend = result.average if result.average is not None else "No stipend data available"
+        highest = query.with_entities(func.max(Student.stipend)).scalar()
+        lowest = non_zero_query.with_entities(func.min(Student.stipend)).scalar()
+        average = query.with_entities(func.avg(Student.stipend)).scalar()
+
+        highest_stipend = highest if highest is not None else "No stipend data available"
+        lowest_stipend = lowest if lowest is not None else "No valid (non-zero) stipend data available"
+        average_stipend = average if average is not None else "No stipend data available"
 
         return jsonify({
             "highest_stipend": highest_stipend,
@@ -200,6 +202,7 @@ def get_stipend_details():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 
