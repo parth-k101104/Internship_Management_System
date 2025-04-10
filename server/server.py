@@ -170,22 +170,28 @@ from sqlalchemy import func
 @app.route('/get_stipend_details', methods=['GET'])
 def get_stipend_details():
     try:
-        # Query for the highest stipend
-        highest_stipend = db.session.query(func.max(Student.stipend)).scalar()
+        year = request.args.get('year')
+        semester = request.args.get('semester')
+        dept_id = request.args.get('dept_id')
 
-        # Query for the lowest stipend
-        lowest_stipend = db.session.query(func.min(Student.stipend)).scalar()
+        # Base query
+        query = db.session.query(func.max(Student.stipend).label("highest"),
+                                 func.min(Student.stipend).label("lowest"),
+                                 func.avg(Student.stipend).label("average"))
 
-        # Query for the average stipend
-        average_stipend = db.session.query(func.avg(Student.stipend)).scalar()
+        # Apply filters if provided
+        if year:
+            query = query.filter(Student.year == year)
+        if semester:
+            query = query.filter(Student.semester == semester)
+        if dept_id:
+            query = query.filter(Student.dept_id == dept_id)
 
-        # Ensure that stipend data exists and handle None (null) cases
-        if highest_stipend is None:
-            highest_stipend = "No stipend data available"
-        if lowest_stipend is None:
-            lowest_stipend = "No stipend data available"
-        if average_stipend is None:
-            average_stipend = "No stipend data available"
+        result = query.first()
+
+        highest_stipend = result.highest if result.highest is not None else "No stipend data available"
+        lowest_stipend = result.lowest if result.lowest is not None else "No stipend data available"
+        average_stipend = result.average if result.average is not None else "No stipend data available"
 
         return jsonify({
             "highest_stipend": highest_stipend,
