@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func, cast, Integer
+
 from flask_cors import CORS  
 
 app = Flask(__name__)
@@ -100,6 +102,7 @@ def check_session():
     else:
         return jsonify({'status': 'error', 'logged_in': False})
     
+    
 @app.route('/get_dashboard_data', methods=['GET'])
 def get_dashboard_data():
     try:
@@ -165,8 +168,6 @@ def get_student_details():
     })
     
 
-from sqlalchemy import func
-
 @app.route('/get_stipend_details', methods=['GET'])
 def get_stipend_details():
     try:
@@ -203,7 +204,38 @@ def get_stipend_details():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/stipend/department-summary', methods=['GET'])
+def get_department_stipend_summary():
+    departments = db.session.query(Student.dept_id).distinct().all()
+    response = {}
 
+    for dept_row in departments:
+        dept = dept_row[0]
+        # Base query per department
+        query = db.session.query(Student).filter(Student.dept_id == dept)
+
+        # Highest: excluding None
+        highest = query \
+            .filter(Student.stipend != None) \
+            .with_entities(func.max(cast(Student.stipend, Integer))).scalar()
+
+        # Average: excluding None
+        average = query \
+            .filter(Student.stipend != None) \
+            .with_entities(func.avg(cast(Student.stipend, Integer))).scalar()
+
+        # Lowest: excluding None and 0
+        lowest = query \
+            .filter(Student.stipend != None, cast(Student.stipend, Integer) > 0) \
+            .with_entities(func.min(cast(Student.stipend, Integer))).scalar()
+
+        response[dept] = {
+            'highest': highest or 0,
+            'avg': round(average, 2) if average else 0,
+            'lowest': lowest or 0
+        }
+
+    return jsonify(response)
 
 
 if __name__ == '__main__':

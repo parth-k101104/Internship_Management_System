@@ -15,6 +15,8 @@ const StipendDetails = () => {
     lowest_stipend: 0,
     avg_stipend: 0,
   });
+  const [departmentStipendData, setDepartmentStipendData] = useState({});
+
 
   const [viewMode, setViewMode] = useState("graph"); // graph or table
 
@@ -36,6 +38,19 @@ const StipendDetails = () => {
     };
     fetchDashboardData();
   }, []);
+
+  useEffect(() => {
+    const fetchDepartmentStipendData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/stipend/department-summary");
+        setDepartmentStipendData(response.data);
+      } catch (error) {
+        console.error("Error fetching department-wise stipend details:", error);
+      }
+    };
+    fetchDepartmentStipendData();
+  }, []);
+  
 
   return (
     <div className="dashboard-container">
@@ -87,7 +102,7 @@ const StipendDetails = () => {
             </div>
             <div className="data-view">
             {viewMode === "graph" ? (
-              <StipendBarChart data={studentData} />
+              <StipendBarChart data={departmentStipendData} />
             ) : (
               <div className="table">
                 <table className="student-table">
