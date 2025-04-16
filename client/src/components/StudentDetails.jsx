@@ -21,29 +21,34 @@ const StudentDetails = () => {
 
   useEffect(() => {
     const fetchStudentData = async () => {
-      if (year) {  // Fetch data if year is selected
-        setLoading(true);
-        try {
-          const response = await axios.get("http://localhost:5000/get_student_details", {
-            params: { year, semester, dept_id } // Add dept_id to the query parameters
-          });
-          setStudentData(response.data.stats);
-          setStudents(response.data.students);
-        } catch (error) {
-          console.error("Error fetching student details:", error);
-        }
-        setLoading(false);
+      setLoading(true);  // Set loading to true before fetching data
+      try {
+        const response = await axios.get("http://localhost:5000/get_student_details", {
+          params: { year, semester, dept_id }
+        });
+        setStudentData(response.data.stats);
+        setStudents(response.data.students);
+      } catch (error) {
+        console.error("Error fetching student details:", error);
       }
+      setTimeout(() => setLoading(false), 1000); // Keep loading state visible for at least 1s
     };
-
+  
     fetchStudentData();
-  }, [year, semester, dept_id]); // Re-fetch data when any filter changes
+  }, [year, semester, dept_id]);  // Runs on mount and when filters change
+  
 
   return (
     <div className="dashboard-container">
       <Sidebar navigate={navigate} />
       <main className="content">
         <Navbar />
+
+        {loading ? (
+          <div className="loading-container">
+            <p className="loading-text">Loading Student Details...</p>
+          </div>
+        ) : (
         <section className="overview">
           <h1>Student Details</h1>
 
@@ -78,12 +83,9 @@ const StudentDetails = () => {
               </select>
             </div>
           </div>
-        </section>
+        
 
-        {loading ? (
-          <p>Loading Student Details...</p>
-        ) : (
-          <>
+
             {/* Stat Cards */}
             <div className="stats">
               <div className="stat-card">
@@ -141,7 +143,7 @@ const StudentDetails = () => {
                 </tbody>
               </table>
             </div>
-          </>
+            </section>
         )}
       </main>
     </div>

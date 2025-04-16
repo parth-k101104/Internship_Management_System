@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func, cast, Integer
+
 from flask_cors import CORS  
 
 app = Flask(__name__)
@@ -100,6 +102,7 @@ def check_session():
     else:
         return jsonify({'status': 'error', 'logged_in': False})
     
+    
 @app.route('/get_dashboard_data', methods=['GET'])
 def get_dashboard_data():
     try:
@@ -165,27 +168,33 @@ def get_student_details():
     })
     
 
-from sqlalchemy import func
-
 @app.route('/get_stipend_details', methods=['GET'])
 def get_stipend_details():
     try:
-        # Query for the highest stipend
-        highest_stipend = db.session.query(func.max(Student.stipend)).scalar()
+        year = request.args.get('year')
+        semester = request.args.get('semester')
+        dept_id = request.args.get('dept_id')
 
-        # Query for the lowest stipend
-        lowest_stipend = db.session.query(func.min(Student.stipend)).scalar()
+        # Base query with filters applied before aggregations
+        query = db.session.query(Student.stipend)
 
-        # Query for the average stipend
-        average_stipend = db.session.query(func.avg(Student.stipend)).scalar()
+        if year:
+            query = query.filter(Student.year == year)
+        if semester:
+            query = query.filter(Student.semester == semester)
+        if dept_id:
+            query = query.filter(Student.dept_id == dept_id)
 
-        # Ensure that stipend data exists and handle None (null) cases
-        if highest_stipend is None:
-            highest_stipend = "No stipend data available"
-        if lowest_stipend is None:
-            lowest_stipend = "No stipend data available"
-        if average_stipend is None:
-            average_stipend = "No stipend data available"
+        # Filter out NULL and 0 stipends for lowest calculation
+        non_zero_query = query.filter(Student.stipend != None, Student.stipend > 0)
+
+        highest = query.with_entities(func.max(Student.stipend)).scalar()
+        lowest = non_zero_query.with_entities(func.min(Student.stipend)).scalar()
+        average = query.with_entities(func.avg(Student.stipend)).scalar()
+
+        highest_stipend = highest if highest is not None else "No stipend data available"
+        lowest_stipend = lowest if lowest is not None else "No valid (non-zero) stipend data available"
+        average_stipend = average if average is not None else "No stipend data available"
 
         return jsonify({
             "highest_stipend": highest_stipend,
@@ -195,6 +204,38 @@ def get_stipend_details():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/stipend/department-summary', methods=['GET'])
+def get_department_stipend_summary():
+    departments = db.session.query(Student.dept_id).distinct().all()
+    response = {}
+
+    for dept_row in departments:
+        dept = dept_row[0]
+        # Base query per department
+        query = db.session.query(Student).filter(Student.dept_id == dept)
+
+        # Highest: excluding None
+        highest = query \
+            .filter(Student.stipend != None) \
+            .with_entities(func.max(cast(Student.stipend, Integer))).scalar()
+
+        # Average: excluding None
+        average = query \
+            .filter(Student.stipend != None) \
+            .with_entities(func.avg(cast(Student.stipend, Integer))).scalar()
+
+        # Lowest: excluding None and 0
+        lowest = query \
+            .filter(Student.stipend != None, cast(Student.stipend, Integer) > 0) \
+            .with_entities(func.min(cast(Student.stipend, Integer))).scalar()
+
+        response[dept] = {
+            'highest': highest or 0,
+            'avg': round(average, 2) if average else 0,
+            'lowest': lowest or 0
+        }
+
+    return jsonify(response)
 
 
 if __name__ == '__main__':

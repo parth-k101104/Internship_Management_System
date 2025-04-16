@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {FaUserFriends, FaBuilding, FaChartLine, FaBriefcase, FaMoneyBillAlt, FaArrowDown, FaChartBar, FaMapMarkerAlt } from "react-icons/fa";
+import {FaMoneyBillAlt, FaArrowDown, FaChartBar} from "react-icons/fa";
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
 import "./Home.css";
+import StipendBarChart from "./StipendBarChart"; // adjust path if needed
 
 const StipendDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [studentData, setStipendData] = useState({
-    total_students: 0,
-    on_campus: 0,
-    off_campus: 0,
+    highest_stipend: 0,
+    lowest_stipend: 0,
+    avg_stipend: 0,
   });
+  const [departmentStipendData, setDepartmentStipendData] = useState({});
+
+
+  const [viewMode, setViewMode] = useState("graph"); // graph or table
 
   useEffect(() => {
-    // Simulate a loading delay of 1 second
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1000);
-
-    return () => clearTimeout(timer); // Cleanup timeout on unmount
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -30,12 +33,24 @@ const StipendDetails = () => {
         const response = await axios.get("http://localhost:5000/get_stipend_details");
         setStipendData(response.data);
       } catch (error) {
-        console.error("Error fetching student details:", error);
+        console.error("Error fetching stipend details:", error);
       }
     };
-
     fetchDashboardData();
   }, []);
+
+  useEffect(() => {
+    const fetchDepartmentStipendData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/stipend/department-summary");
+        setDepartmentStipendData(response.data);
+      } catch (error) {
+        console.error("Error fetching department-wise stipend details:", error);
+      }
+    };
+    fetchDepartmentStipendData();
+  }, []);
+  
 
   return (
     <div className="dashboard-container">
@@ -50,6 +65,8 @@ const StipendDetails = () => {
         ) : (
           <section className="overview">
             <h1>Stipend Details</h1>
+
+            {/* Stat Cards */}
             <div className="stats">
               <div className="stat-card">
                 <FaMoneyBillAlt className="icon" />
@@ -67,6 +84,52 @@ const StipendDetails = () => {
                 <h2>Average Stipend</h2>
               </div>
             </div>
+
+            {/* View Toggle */}
+            <div className="toggle-buttons" style={{ margin: "20px 0" }}>
+              <button
+                className={viewMode === "graph" ? "active" : ""}
+                onClick={() => setViewMode("graph")}
+              >
+                Graph View
+              </button>
+              <button
+                className={viewMode === "table" ? "active" : ""}
+                onClick={() => setViewMode("table")}
+              >
+                Table View
+              </button>
+            </div>
+            <div className="data-view">
+            {viewMode === "graph" ? (
+              <StipendBarChart data={departmentStipendData} />
+            ) : (
+              <div className="table">
+                <table className="student-table">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Amount (₹)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Highest Stipend</td>
+                      <td>{studentData.highest_stipend}</td>
+                    </tr>
+                    <tr>
+                      <td>Average Stipend</td>
+                      <td>{studentData.avg_stipend}</td>
+                    </tr>
+                    <tr>
+                      <td>Lowest Stipend</td>
+                      <td>{studentData.lowest_stipend}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
           </section>
         )}
       </main>
