@@ -294,8 +294,9 @@ body {
   align-items: center;
   margin-top: 30px;
   overflow-x: auto;
-  max-height: 300px; /* Adjust height as needed */
   overflow-y: auto;
+  max-height: 400px; /* Adjust height as needed */
+  
 }
 
 .table h2{
@@ -332,6 +333,41 @@ body {
   border: 1px solid #4d4d59;
 }
 
+.table-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.student-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.student-table th, .student-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border: 1px solid black;
+  width: 120px;
+}
+
+.student-table th {
+  position: sticky;
+  top: 0;
+  background-color: #4d4d59;
+  color: white;
+  z-index: 2;
+}
+
+.email-cell {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  max-width: 150px; /* adjust as needed */
+}
+
+
 .toggle-buttons {
   margin-bottom: 1rem;
   display: flex;
@@ -351,4 +387,10 @@ body {
 .toggle-buttons .active {
   background-color: #4d4d59;
   color: white;
+}
+
+.mid{
+  text-align: center;
+  margin-top: 20px;
+  font-size: 18px;
 }

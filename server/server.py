@@ -298,6 +298,60 @@ def get_year_wise_stipend_summary():
 
     return jsonify(response)
 
+@app.route('/api/stipend/year-wise-student-summary', methods=['GET'])
+def get_year_wise_student_summary():
+    # Get the department and category parameters
+    department_name = request.args.get('department', None)
+    category = request.args.get('category', None)
+
+    if not department_name:
+        return jsonify({'error': 'Department is required'}), 400
+
+    if not category:
+        return jsonify({'error': 'Category (on-campus or off-campus) is required'}), 400
+
+    # Validate category
+    if category not in ['on', 'off']:
+        return jsonify({'error': 'Invalid category. Must be "on-campus" or "off-campus"'}), 400
+
+    # Get department ID
+    department = db.session.query(Department).filter(Department.department == department_name).first()
+    if not department:
+        return jsonify({'error': 'Department not found'}), 404
+
+    dept_id = department.dept_id
+
+    # Get distinct years
+    years = db.session.query(Student.year).distinct().all()
+    if not years:
+        return jsonify({'error': 'No data found for the years'}), 404
+
+    response = []
+
+    for year_row in years:
+        year = year_row[0]
+
+        # Filter students by department, year, and company category
+        query = db.session.query(Student).filter(
+            Student.dept_id == dept_id,
+            Student.year == year,
+            Student.category == category
+        )
+
+        # Count students with stipend
+        with_stipend = query.filter(Student.stipend != None, cast(Student.stipend, Integer) > 0).count()
+
+        # Count students without stipend
+        without_stipend = query.filter((Student.stipend == None) | (cast(Student.stipend, Integer) == 0)).count()
+
+        response.append({
+            'year': year,
+            'with_stipend': with_stipend,
+            'without_stipend': without_stipend
+        })
+
+    return jsonify(response)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
