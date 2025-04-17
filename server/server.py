@@ -66,6 +66,11 @@ class Company_sup(db.Model):
     sup_name = db.Column(db.String(100), nullable=False)
     sup_contact = db.Column(db.String(45), unique=True, nullable=False)
     sup_email = db.Column(db.String(100), unique=True, nullable=False)
+    
+class Department(db.Model):
+    __tablename__ = 'department'  # Name of the table in the database
+    dept_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    department = db.Column(db.String(100), nullable=False)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -206,13 +211,19 @@ def get_stipend_details():
 
 @app.route('/api/stipend/department-summary', methods=['GET'])
 def get_department_stipend_summary():
+    # Get the year parameter from the request, default to None if not provided
+    year = request.args.get('year', None)
+
     departments = db.session.query(Student.dept_id).distinct().all()
     response = {}
 
     for dept_row in departments:
         dept = dept_row[0]
-        # Base query per department
+        # Base query per department, filter by year if provided
         query = db.session.query(Student).filter(Student.dept_id == dept)
+        
+        if year:
+            query = query.filter(Student.year == year)
 
         # Highest: excluding None
         highest = query \
@@ -234,6 +245,62 @@ def get_department_stipend_summary():
             'avg': round(average, 2) if average else 0,
             'lowest': lowest or 0
         }
+
+    return jsonify(response)
+
+@app.route('/api/stipend/year-summary', methods=['GET'])
+def get_year_wise_stipend_summary():
+    # Get the department parameter from the request
+    department_name = request.args.get('department', None)
+    if not department_name:
+        return jsonify({'error': 'Department is required'}), 400
+
+    # Query to find the department ID based on the department name
+    department = db.session.query(Department).filter(Department.department == department_name).first()
+    
+    # If department is not found
+    if not department:
+        return jsonify({'error': 'Department not found'}), 404
+
+    dept_id = department.dept_id  # Get the department ID
+
+    # Get distinct years for the entire Student table (not department-filtered)
+    years = db.session.query(Student.year).distinct().all()
+    
+    if not years:
+        return jsonify({'error': 'No data found for the years'}), 404
+
+    response = []
+
+    # Iterate over each distinct year
+    for year_row in years:
+        year = year_row[0]
+        
+        # Base query filtered by department (using dept_id) and year
+        query = db.session.query(Student).filter(Student.dept_id == dept_id, Student.year == year)
+        
+        # Highest stipend: excluding None
+        highest = query \
+            .filter(Student.stipend != None) \
+            .with_entities(func.max(cast(Student.stipend, Integer))).scalar()
+
+        # Average stipend: excluding None
+        average = query \
+            .filter(Student.stipend != None) \
+            .with_entities(func.avg(cast(Student.stipend, Integer))).scalar()
+
+        # Lowest stipend: excluding None and 0
+        lowest = query \
+            .filter(Student.stipend != None, cast(Student.stipend, Integer) > 0) \
+            .with_entities(func.min(cast(Student.stipend, Integer))).scalar()
+
+        # Append the data for the year to the response list
+        response.append({
+            'year': year,
+            'highest_stipend': highest or 0,
+            'avg_stipend': round(average, 2) if average else 0,
+            'lowest_stipend': lowest or 0
+        })
 
     return jsonify(response)
 

@@ -119,6 +119,7 @@ body {
   flex-direction: row;
   justify-content: space-evenly;
   margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .label{

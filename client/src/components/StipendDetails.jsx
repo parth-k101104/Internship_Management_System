@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {FaMoneyBillAlt, FaArrowDown, FaChartBar} from "react-icons/fa";
+import { FaMoneyBillAlt, FaArrowDown, FaChartBar } from "react-icons/fa";
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
+import StipendBarChart from "./StipendBarChart";
+import StipendTimeSeriesChart from "./StipendTimeSeriesChart"; 
 import "./Home.css";
-import StipendBarChart from "./StipendBarChart"; // adjust path if needed
 
 const StipendDetails = () => {
   const navigate = useNavigate();
@@ -15,15 +16,20 @@ const StipendDetails = () => {
     lowest_stipend: 0,
     avg_stipend: 0,
   });
-  const [departmentStipendData, setDepartmentStipendData] = useState({});
 
+  const [filteredStipendData, setFilteredStipendData] = useState([]);
+  const [yearWiseStipendData, setYearWiseStipendData] = useState([]);
+  const [viewMode, setViewMode] = useState("graph");
 
-  const [viewMode, setViewMode] = useState("graph"); // graph or table
+  const [filterType, setFilterType] = useState("department");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+
+  const departmentOptions = ["CSE", "CSBS", "CSF", "AIDS"];
+  const yearOptions = ["2023", "2024"];
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -40,17 +46,37 @@ const StipendDetails = () => {
   }, []);
 
   useEffect(() => {
-    const fetchDepartmentStipendData = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/stipend/department-summary");
-        setDepartmentStipendData(response.data);
-      } catch (error) {
-        console.error("Error fetching department-wise stipend details:", error);
+    const fetchFilteredDashboardData = async () => {
+      if (filterType === "department" && selectedYear) {
+        try {
+          const response = await axios.get("http://localhost:5000/api/stipend/department-summary", {
+            params: { year: selectedYear },
+          });
+          setFilteredStipendData(response.data);
+        } catch (error) {
+          console.error("Error fetching filtered stipend details:", error);
+        }
       }
     };
-    fetchDepartmentStipendData();
-  }, []);
-  
+    fetchFilteredDashboardData();
+  }, [filterType, selectedYear]);
+
+  useEffect(() => {
+    const fetchYearWiseSummary = async () => {
+      if (filterType === "year" && selectedDepartment) {
+        try {
+          const response = await axios.get("http://localhost:5000/api/stipend/year-summary", {
+            params: { department: selectedDepartment },
+          });
+          setYearWiseStipendData(response.data);
+          console.log("Year-wise data:", response.data);
+        } catch (error) {
+          console.error("Error fetching year-wise stipend summary:", error);
+        }
+      }
+    };
+    fetchYearWiseSummary();
+  }, [filterType, selectedDepartment]);
 
   return (
     <div className="dashboard-container">
@@ -85,6 +111,58 @@ const StipendDetails = () => {
               </div>
             </div>
 
+            {/* Filter Section */}
+            <div className="filters">
+              <div className="filters-1">
+                <label className="label">Filter By:</label>
+                <select
+                  className="select"
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                >
+                  <option value="">Select Filter Type</option>
+                  <option value="department">Department Wise</option>
+                  <option value="year">Year Wise</option>
+                </select>
+              </div>
+
+              {filterType === "department" && (
+                <div className="filters-1">
+                  <label className="label">Select Year:</label>
+                  <select
+                    className="select"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                  >
+                    <option value="">Select Year</option>
+                    {yearOptions.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {filterType === "year" && (
+                <div className="filters-1">
+                  <label className="label">Select Department:</label>
+                  <select
+                    className="select"
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                  >
+                    <option value="">Select Department</option>
+                    {departmentOptions.map((dept) => (
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
             {/* View Toggle */}
             <div className="toggle-buttons" style={{ margin: "20px 0" }}>
               <button
@@ -100,9 +178,14 @@ const StipendDetails = () => {
                 Table View
               </button>
             </div>
-            <div className="data-view">
+
+            {/* Data Display */}
             {viewMode === "graph" ? (
-              <StipendBarChart data={departmentStipendData} />
+              filterType === "department" ? (
+                <StipendBarChart data={filteredStipendData} />
+              ) : (
+                <StipendTimeSeriesChart data={yearWiseStipendData} />
+              )
             ) : (
               <div className="table">
                 <table className="student-table">
@@ -115,21 +198,32 @@ const StipendDetails = () => {
                   <tbody>
                     <tr>
                       <td>Highest Stipend</td>
-                      <td>{studentData.highest_stipend}</td>
+                      <td>
+                        {filteredStipendData?.highest_stipend ??
+                          yearWiseStipendData?.highest_stipend ??
+                          "N/A"}
+                      </td>
                     </tr>
                     <tr>
                       <td>Average Stipend</td>
-                      <td>{studentData.avg_stipend}</td>
+                      <td>
+                        {filteredStipendData?.avg_stipend ??
+                          yearWiseStipendData?.avg_stipend ??
+                          "N/A"}
+                      </td>
                     </tr>
                     <tr>
                       <td>Lowest Stipend</td>
-                      <td>{studentData.lowest_stipend}</td>
+                      <td>
+                        {filteredStipendData?.lowest_stipend ??
+                          yearWiseStipendData?.lowest_stipend ??
+                          "N/A"}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             )}
-          </div>
           </section>
         )}
       </main>
