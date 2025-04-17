@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, cast, Integer
-
 from flask_cors import CORS  
 
 app = Flask(__name__)
@@ -30,9 +29,7 @@ class Admin(db.Model):
 class Student(db.Model):
     __tablename__ = 'students'
     PRN = db.Column(db.Integer, primary_key=True)
-    First_name = db.Column(db.String(100), nullable=False)
-    Middle_name = db.Column(db.String(100), nullable=False)
-    Last_name = db.Column(db.String(100), nullable=False)
+    Name = db.Column(db.String(500), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
     phone = db.Column(db.String(45), nullable=False)
     year = db.Column(db.String(45), nullable=False)
@@ -131,8 +128,7 @@ def get_dashboard_data():
 def get_student_details():
     year = request.args.get('year')
     semester = request.args.get('semester')
-    dept_id = request.args.get('dept_id')  # Added department filter
-
+    dept_id = request.args.get('dept_id')  
     if not year:
         return jsonify({"error": "Year is required"}), 400  # Year is mandatory, but semester and dept_id are optional
 
@@ -152,9 +148,7 @@ def get_student_details():
 
     student_list = [{
         "PRN": s.PRN,
-        "First_name": s.First_name,
-        "Middle_name": s.Middle_name,
-        "Last_name": s.Last_name,
+        "Name": s.Name,
         "email": s.email,
         "phone": s.phone,
         "category": s.category,

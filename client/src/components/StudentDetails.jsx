@@ -67,8 +67,8 @@ const StudentDetails = () => {
               <label className="label">Semester:</label>
               <select className="select" value={semester} onChange={(e) => setSemester(e.target.value)}>
                 <option value="">All Semesters</option>
-                <option value="6">6</option>
                 <option value="7">7</option>
+                <option value="8">8</option>
               </select>
             </div>
 
@@ -126,7 +126,7 @@ const StudentDetails = () => {
                     students.map((student) => (
                       <tr key={student.PRN}>
                         <td>{student.PRN}</td>
-                        <td>{`${student.First_name} ${student.Middle_name} ${student.Last_name}`}</td>
+                        <td>{student.Name}</td>
                         <td>{student.email}</td>
                         <td>{student.phone}</td>
                         <td>{student.category}</td>
